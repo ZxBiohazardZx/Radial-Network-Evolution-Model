@@ -1,4 +1,4 @@
-function Nodes = GenerateGrid(R,phi,S)
+function Nodes = GenerateGrid(R,phi,S,Pop_Dist)
 % --------------------------------------
 % -- Define Nodes / connection points -- 
 % --------------------------------------
@@ -27,3 +27,22 @@ for n=1:1:(S*num_seg)+1
     end
 end
 
+
+%---------------------------
+%-- Population Definition -- 
+%---------------------------
+for a=1:1:numel(Nodes)
+    switch Pop_Dist
+        case 1 % Uniform Distribution
+            Nodes(a).pop = 82500;                           % Uniform Population   ~ 8 mill
+        case 2 % Linear Distribution
+            Nodes(a).pop = 165000 - (Nodes(a).r / R)*145000; % Linear Decay Function ~ 8.340 mill
+        case 3 % Exponential Distribution
+            Nodes(a).pop = 275000*exp(-Nodes(a).r/15);   %Exponential Decay Function  ~ 8.311 mill
+        otherwise
+            warning('No valid population provided');
+    end
+if a==1
+     Nodes(a).pop=2*Nodes(a).pop;
+ end
+end

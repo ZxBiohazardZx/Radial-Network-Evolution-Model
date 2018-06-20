@@ -1,14 +1,41 @@
-function DrawNetwork(Nodes,Links,CapValue,MaxCapacity)
-%--------------------------------------------------------------------------
-% - INPUT:  {Nodes}, {Links}
-% - OUTPUT: Figure displaying network state
-% - METHOD: Draws network elements based on coordinates
-%--------------------------------------------------------------------------
+function VisualiseNetworkEvo(BRT_U,BRT_L,BRT_E,LRT_U,LRT_L,LRT_E,Metro_U,Metro_L,Metro_E,R,phi,S,Nodes)
+    VisualiseEvo(BRT_U,Nodes,R,phi,S,'BRT_U');
+    VisualiseEvo(BRT_L,Nodes,R,phi,S,'BRT_L');
+    VisualiseEvo(BRT_E,Nodes,R,phi,S,'BRT_E');
+    VisualiseEvo(LRT_U,Nodes,R,phi,S,'LRT_U');
+    VisualiseEvo(LRT_L,Nodes,R,phi,S,'LRT_L');
+    VisualiseEvo(LRT_E,Nodes,R,phi,S,'LRT_E');
+    VisualiseEvo(Metro_U,Nodes,R,phi,S,'Metro_U');
+    VisualiseEvo(Metro_L,Nodes,R,phi,S,'Metro_L');
+    VisualiseEvo(Metro_E,Nodes,R,phi,S,'Metro_E');
+    
+    
+FolderName = 'Graphs\History';   % Your destination folder
+FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+for iFig = 1:length(FigList)
+  FigHandle = FigList(iFig);
+  set(FigHandle,'units','normalized','outerposition',[0 0 1 1])
+  FigName   = strcat(get(FigHandle, 'Name'), '.png');  
+  saveas(FigHandle, fullfile(FolderName, FigName));
+end
+close all
+
+
+end
+
+function VisualiseEvo(History,Nodes,R,phi,S,Name)
+set(groot,'defaultLineLineWidth','remove')
+%New Figure for Network Visualisation
+figure('Name',Name,'NumberTitle','off');
+DrawGrid(R,phi,S);
+
 hold on
 plotNodes(Nodes);
-plotLinks(Nodes,Links,CapValue,MaxCapacity);
+plotLinks(Nodes,History(end).Links);
 hold off
+title('Network History')
 end
+
 
 function plotNodes(Nodes)
     %--------------------
@@ -24,13 +51,12 @@ function plotNodes(Nodes)
     end
 end
 
-function plotLinks(Nodes,Links,CapValue,MaxCapacity)
+function plotLinks(Nodes,Links)
 %--------------------
 %-- Plot the Links --
 %--------------------
 for n=1:1:numel(Links) % For each Link:
-    NormCap= Links(n).Ratio;%Links(n).Capacity / Links(n).Usage;
-    NormCap2= Links(n).Capacity / MaxCapacity; 
+    NormCap=n;
     %determine the type (Ring/Radial) using r coordinate:
     DiffR=Nodes(Links(n).EndNode).r - Nodes(Links(n).StartNode).r;
     if DiffR == 0 %then this is a RING (Same radius, thus ringline)
@@ -49,9 +75,10 @@ for n=1:1:numel(Links) % For each Link:
         yy = [y' y'];
         zz=zeros(size(xx));
         cc = ones(size(xx)).*[NormCap NormCap];
-        surf(xx,yy,zz,cc,'EdgeColor','interp','FaceColor','none','LineWidth',4*NormCap2) ;
-        colormap(jet) ;       %// assign the colormap
+        surf(xx,yy,zz,cc,'EdgeColor','interp','FaceColor','none','LineWidth',2) ;
+        colormap(copper) ;       %// assign the colormap
         shading flat          %// so each line segment has a plain color
+        colorbar
         view(2) %// view(0,90)%// set view in X-Y plane
         
         % plot the segment
@@ -68,10 +95,17 @@ for n=1:1:numel(Links) % For each Link:
         yy = [[y1 y2]' [y1 y2]'];
         zz=zeros(size(xx));
         cc = ones(size(xx)).*[NormCap NormCap];
-        surf(xx,yy,zz,cc,'EdgeColor','interp','FaceColor','none','LineWidth',4*NormCap2) ;
+        surf(xx,yy,zz,cc,'EdgeColor','interp','FaceColor','none','LineWidth',2) ;
         
         
     end
 end
 
 end
+
+
+
+
+% subplot(3,3,9)
+% plot(x,y10);
+% title('Sum PT Users')

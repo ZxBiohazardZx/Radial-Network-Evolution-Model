@@ -8,6 +8,7 @@ function [Benefits,Costs,Score] = calcCapScore(CandidateIn,Links,Alpha,VOT)
         Benefits = -1; Costs = Alpha*CandidateIn.NewLinkLength;Score = -1; % Debug Values
     else % There is a need for Capacity Expansion
         % For all links in the Candidate check if there is a change and if so, compute the dLoad
+        dBenefits=zeros(1,numel(CandidateIn.Links));
         for a=1:1:numel(CandidateIn.Links)
             if Links(a).Capacity ~= CandidateIn.Links(a).Capacity
                 %Then compare the ratios for score urgency parameter
